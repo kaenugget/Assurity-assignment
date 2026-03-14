@@ -30,7 +30,7 @@ export function ServicesTableWidget({
   if (size === "medium") {
     return (
       <WidgetFrame title="Services Table" subtitle="Top issues first">
-        <div className="space-y-3 overflow-y-auto">
+        <div className="widget-no-drag space-y-3 overflow-y-auto">
           {problematic.slice(0, 5).map((service) => (
             <button
               key={service.service_key}
@@ -56,7 +56,7 @@ export function ServicesTableWidget({
 
   return (
     <WidgetFrame title="Services Table" subtitle="Searchable service detail entry point">
-      <div className="overflow-hidden rounded-[1.1rem] border border-slate-200">
+      <div className="widget-no-drag overflow-hidden rounded-[1.1rem] border border-slate-200">
         <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
           <thead className="bg-slate-50 text-slate-500">
             <tr>

@@ -33,7 +33,7 @@ export function VersionDriftWidget({
           : "No version mismatches detected."
       }
     >
-      <div className="space-y-3 overflow-y-auto">
+      <div className="widget-no-drag space-y-3 overflow-y-auto">
         {drifted.length === 0 ? (
           <div className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
             The monitored fleet is version-aligned.

@@ -333,7 +333,8 @@ export function DashboardPage() {
               margin={gridMargin}
               isResizable
               isDraggable
-              draggableHandle=".grid-item-handle"
+              draggableHandle=".widget-drag-surface"
+              draggableCancel=".react-resizable-handle,button,a,input,textarea,select,option,[role='button'],table,thead,tbody,tr,td,th,.widget-no-drag"
               onBreakpointChange={(breakpoint: string) => setCurrentBreakpoint(breakpoint as keyof Layouts)}
               onLayoutChange={(_: Layout[], allLayouts: Layouts) =>
                 startTransition(() => setLayouts(normalizeLayouts(allLayouts)))

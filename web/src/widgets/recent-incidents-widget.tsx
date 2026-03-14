@@ -35,7 +35,7 @@ export function RecentIncidentsWidget({
   return (
     <WidgetFrame title="Recent Incidents" subtitle="Incident stream with optional AI summary">
       <div className="grid h-full gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-        <div className="space-y-3 overflow-y-auto">
+        <div className="widget-no-drag space-y-3 overflow-y-auto">
           {visible.map((incident) => (
             <div key={`${incident.service_key}-${incident.updated_at}`} className="rounded-2xl bg-slate-50 px-4 py-3">
               <div className="flex items-start justify-between gap-3">

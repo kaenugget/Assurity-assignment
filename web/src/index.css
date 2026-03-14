@@ -48,4 +48,16 @@
   .grid-item-handle {
     @apply relative z-10 cursor-move rounded-t-[1.25rem];
   }
+
+  .widget-drag-surface {
+    cursor: grab;
+  }
+
+  .widget-drag-surface:active {
+    cursor: grabbing;
+  }
+
+  .widget-no-drag {
+    cursor: default;
+  }
 }

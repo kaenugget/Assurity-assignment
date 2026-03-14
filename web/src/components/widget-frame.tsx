@@ -15,7 +15,7 @@ export function WidgetFrame({
   className?: string;
 }) {
   return (
-    <Card className={cn("relative flex h-full min-h-0 flex-col overflow-hidden", className)}>
+    <Card className={cn("widget-drag-surface relative flex h-full min-h-0 flex-col overflow-hidden", className)}>
       <CardHeader className="grid-item-handle shrink-0 pb-3">
         <CardTitle>{title}</CardTitle>
         {subtitle ? <CardDescription>{subtitle}</CardDescription> : null}
