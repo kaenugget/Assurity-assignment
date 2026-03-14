@@ -1,0 +1,51 @@
+@import url("https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap");
+@import "react-grid-layout/css/styles.css";
+@import "react-resizable/css/styles.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 40 33% 97%;
+  --foreground: 216 24% 18%;
+  --card: 0 0% 100%;
+  --card-foreground: 216 24% 18%;
+  --border: 32 20% 86%;
+  --muted: 36 25% 93%;
+  --muted-foreground: 215 12% 42%;
+  --accent: 200 38% 92%;
+  --accent-foreground: 209 44% 22%;
+  --success: 158 54% 38%;
+  --warning: 38 92% 45%;
+  --danger: 6 76% 48%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply min-h-screen bg-background font-sans text-foreground antialiased;
+    background-image:
+      radial-gradient(circle at top left, rgba(194, 222, 212, 0.45), transparent 30%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(246, 242, 235, 0.95));
+  }
+
+  #root {
+    @apply min-h-screen;
+  }
+}
+
+@layer components {
+  .panel-sheen {
+    background-image:
+      linear-gradient(120deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0)),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+  }
+
+  .grid-item-handle {
+    @apply relative z-10 cursor-move rounded-t-[1.25rem];
+  }
+}
