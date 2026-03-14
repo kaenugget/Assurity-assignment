@@ -22,6 +22,24 @@ AssureOps is a lightweight reliability dashboard for **fictional auth-critical i
 - Exposes Swagger at `/docs` and ReDoc at `/redoc`.
 - Renders a light-first internal dashboard with draggable and resizable widgets.
 
+## Assessment fit
+
+This submission satisfies the take-home's **core requirements**:
+
+- **Config-driven services**: service name, URL, expected version, environment, platform, timeout, and version parsing rules are loaded from [`api/data/services.yaml`](api/data/services.yaml) or a JSON equivalent through [`api/app/config_loader.py`](api/app/config_loader.py).
+- **Periodic checks**: APScheduler triggers the FastAPI monitoring coordinator every `CHECK_INTERVAL_SECONDS`, recording HTTP status, latency, derived health, and observed version.
+- **Persistent storage**: Convex stores service snapshots, check history, incidents, saved layouts, and AI artifacts.
+- **API and dashboard**: FastAPI exposes the operational API, while the React dashboard presents fleet summary, incidents, trends, and service drill-downs.
+- **Dockerised startup**: the repo includes a multi-target [`Dockerfile`](Dockerfile) and a [`docker-compose.yml`](docker-compose.yml) that starts the API, frontend, and local Convex stack together.
+
+It also covers the listed **stretch goals**:
+
+- **Version drift detection** via expected vs observed version comparison.
+- **Environment grouping** in both stored metadata and dashboard summaries.
+- **Simple alerting** through console logging plus an optional webhook.
+- **AI-generated incident summary** with deterministic fallback when no API key is configured.
+- **Infrastructure note** near the end of this README.
+
 ## Fictional demo stack
 
 The seeded config in [`api/data/services.yaml`](api/data/services.yaml) monitors these fictional services:
@@ -202,6 +220,8 @@ Key deployment-related variables:
 
 ### Docker
 
+This is the recommended reviewer path because it starts the full stack with one command.
+
 ```bash
 docker compose up --build
 ```
@@ -220,6 +240,14 @@ Expected local URLs:
 - Swagger: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
 - Convex local deployment: `http://localhost:3210`
+
+The `Dockerfile` defines three runnable targets:
+
+- `api` for FastAPI
+- `web` for the Vite frontend
+- `convex` for local Convex development
+
+`docker-compose.yml` is the intended entrypoint for this take-home because the app is a three-service stack rather than a single container.
 
 ### Local development
 
@@ -330,6 +358,7 @@ npm run build
 - The checker runs in-process with FastAPI for simplicity; production scale would likely split it into a dedicated worker.
 - The project deliberately avoids CloudWatch ingestion, deep AWS infra metrics, RBAC, service CRUD from the UI, and arbitrary AI-generated frontend code.
 - Public Convex write functions are acceptable for this take-home’s internal-tool framing, but they would need hardening before a real deployment.
+- The frontend production build currently emits one dashboard chunk above Vite's default size warning threshold, so code-splitting would be a reasonable next optimization.
 
 ## Screenshots / GIF
 
@@ -345,6 +374,20 @@ Placeholder for:
 For a production-leaning deployment, I would run FastAPI in a container behind a load balancer, keep the scheduler either in the API process for small scale or move it to a separate worker for higher check volume, and host the frontend as a static asset bundle or behind the same ingress. Convex would continue to hold service snapshots, check history, incidents, layouts, and AI artifacts. Operational monitoring would focus on scheduler execution latency, failed check volume, incident churn, webhook delivery failures, and API availability. Secrets such as webhook URLs and OpenAI keys should be injected through environment variables, not committed config. This take-home intentionally stays lightweight and optimizes for local startup, reviewer clarity, and end-to-end completeness over production-hardening depth.
 
 ## AI usage note
+
+AI assistance was used selectively while preparing this submission:
+
+- tightening README wording and requirement mapping
+- reviewing deployment/configuration details such as the Render blueprint and local startup flow
+- sanity-checking implementation details and verification steps alongside the existing automated tests
+
+Final code behavior and documentation were still checked manually with:
+
+- `.venv/bin/pytest api/app/tests`
+- `npm test`
+- `npm run build`
+
+In the product itself:
 
 - `POST /api/ai/incident-summary` uses OpenAI Responses when `OPENAI_API_KEY` is present and falls back to deterministic summaries when it is not.
 - `POST /api/ai/layout-suggestion` only returns structured widget placement JSON. It does **not** generate arbitrary frontend code.
