@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Platform(str, Enum):
@@ -206,31 +206,3 @@ class ServiceHistoryResponse(BaseModel):
 class ServiceDetailResponse(BaseModel):
     service: ServiceSnapshot
     incidents: list[IncidentRecord]
-
-
-class ConvexFunctionResponse(BaseModel):
-    status: str
-    value: object | list[object] | str | int | float | bool | None
-
-
-class OpenApiExampleService(BaseModel):
-    model_config = ConfigDict(json_schema_extra={"examples": [{
-        "service_key": "production-govpass-authorize",
-        "name": "GovPass Authorize",
-        "url": "http://localhost:8000/demo/healthy?version=2026.03.14",
-        "expected_version": "2026.03.14",
-        "environment": "production",
-        "platform": "ecs",
-        "component_type": "authorize",
-        "timeout_ms": 3000,
-        "latency_threshold_ms": 900,
-        "version_source_type": "json",
-        "version_source_key": "meta.version",
-        "aws_region": "ap-southeast-1",
-        "aws_cluster": "govpass-prod-cluster",
-        "aws_service_name": "govpass-authorize",
-        "deployment_label": "release-2026-03-14",
-        "is_active": True
-    }]})
-
-    service: ServiceConfig

@@ -14,7 +14,7 @@ from .routes.ai import router as ai_router
 from .routes.services import router as services_router
 from .routes.summary import router as summary_router
 from .scheduler import build_scheduler
-from .settings import Settings, get_settings
+from .settings import get_settings
 
 logging.basicConfig(level=logging.INFO)
 settings = get_settings()

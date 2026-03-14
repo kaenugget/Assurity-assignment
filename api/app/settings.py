@@ -15,7 +15,6 @@ class Settings(BaseSettings):
     webhook_url: str | None = None
     openai_api_key: str | None = None
     openai_model: str = "gpt-5"
-    request_timeout_seconds: float = 10.0
     port: int = 8000
     self_base_url: str | None = None
     cors_allowed_origins: list[str] = [
