@@ -1,0 +1,72 @@
+services:
+  convex:
+    build:
+      context: .
+      target: convex
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+      - root-node-modules:/workspace/node_modules
+      - convex-cache:/root/.convex
+    environment:
+      CONVEX_AGENT_MODE: anonymous
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "const net=require('net'); const socket=net.connect(3210,'127.0.0.1'); socket.on('connect',()=>{socket.end(); process.exit(0);}); socket.on('error',()=>process.exit(1)); setTimeout(()=>process.exit(1),2000);"
+        ]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+    ports:
+      - "3210:3210"
+
+  api:
+    build:
+      context: .
+      target: api
+    working_dir: /workspace
+    command: ["sh", "-c", "cd /workspace/api && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+    volumes:
+      - .:/workspace
+    environment:
+      SERVICE_CONFIG_PATH: /workspace/api/data/services.yaml
+      CONVEX_URL: http://convex:3210
+      CHECK_INTERVAL_SECONDS: "30"
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      WEBHOOK_URL: ${WEBHOOK_URL:-}
+    depends_on:
+      convex:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  web:
+    build:
+      context: .
+      target: web
+    working_dir: /workspace
+    command: ["sh", "-c", "cd /workspace/web && npm run dev -- --host 0.0.0.0 --port 3000"]
+    volumes:
+      - .:/workspace
+      - web-node-modules:/workspace/web/node_modules
+    environment:
+      VITE_API_BASE_URL: http://localhost:8000
+      VITE_CONVEX_URL: http://localhost:3210
+    depends_on:
+      api:
+        condition: service_started
+      convex:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+
+volumes:
+  convex-cache:
+  root-node-modules:
+  web-node-modules:
