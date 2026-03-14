@@ -1,0 +1,12 @@
+{
+  "name": "assureops",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "convex:dev": "CONVEX_AGENT_MODE=anonymous npx convex dev --local",
+    "convex:dev:once": "CONVEX_AGENT_MODE=anonymous npx convex dev --local --once"
+  },
+  "devDependencies": {
+    "convex": "^1.17.4"
+  }
+}

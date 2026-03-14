@@ -1,0 +1,96 @@
+services:
+  - name: GovPass Authorize
+    url: ${SELF_BASE_URL}/demo/healthy?version=2026.03.14
+    expected_version: "2026.03.14"
+    environment: production
+    platform: ecs
+    component_type: authorize
+    timeout_ms: 3000
+    latency_threshold_ms: 800
+    version_source_type: json
+    version_source_key: meta.version
+    aws_region: ap-southeast-1
+    aws_cluster: govpass-prod-cluster
+    aws_service_name: govpass-authorize
+    deployment_label: release-2026.03.14
+
+  - name: GovPass Token
+    url: ${SELF_BASE_URL}/demo/slow?version=2026.03.14&delay_ms=1450
+    expected_version: "2026.03.14"
+    environment: production
+    platform: ecs
+    component_type: token
+    timeout_ms: 3500
+    latency_threshold_ms: 900
+    version_source_type: header
+    version_source_key: X-Service-Version
+    aws_region: ap-southeast-1
+    aws_cluster: govpass-prod-cluster
+    aws_service_name: govpass-token
+    deployment_label: release-2026.03.14
+
+  - name: GovPass Callback
+    url: ${SELF_BASE_URL}/demo/healthy?version=2026.03.14
+    expected_version: "2026.03.14"
+    environment: production
+    platform: ecs
+    component_type: callback
+    timeout_ms: 3000
+    latency_threshold_ms: 1000
+    version_source_type: regex
+    version_source_key: '"version"\s*:\s*"([^"]+)"'
+    aws_region: ap-southeast-1
+    aws_cluster: govpass-prod-cluster
+    aws_service_name: govpass-callback
+    deployment_label: release-2026.03.14
+
+  - name: GovPass JWKS
+    url: ${SELF_BASE_URL}/demo/drift?version=2026.02.28
+    expected_version: "2026.03.14"
+    environment: production
+    platform: ecs
+    component_type: jwks
+    timeout_ms: 3000
+    latency_threshold_ms: 900
+    version_source_type: json
+    version_source_key: meta.version
+    aws_region: ap-southeast-1
+    aws_cluster: govpass-prod-cluster
+    aws_service_name: govpass-jwks
+    deployment_label: release-2026.03.14
+
+  - name: Citizen Profile API
+    url: ${SELF_BASE_URL}/demo/healthy?version=2026.03.14
+    expected_version: "2026.03.14"
+    environment: production
+    platform: ec2
+    component_type: profile
+    timeout_ms: 2500
+    latency_threshold_ms: 700
+    version_source_type: header
+    version_source_key: X-Service-Version
+    aws_region: ap-southeast-1
+    deployment_label: ami-2026.03.14
+
+  - name: OTP Notifications
+    url: ${SELF_BASE_URL}/demo/flaky?version=2026.03.14
+    expected_version: "2026.03.14"
+    environment: staging
+    platform: manual
+    component_type: otp
+    timeout_ms: 2800
+    latency_threshold_ms: 850
+    version_source_type: regex
+    version_source_key: '"version"\s*:\s*"([^"]+)"'
+    deployment_label: manual-rollout-7
+
+  - name: Legacy Benefits API
+    url: ${SELF_BASE_URL}/demo/down
+    expected_version: "1.4.9"
+    environment: production
+    platform: manual
+    component_type: app_api
+    timeout_ms: 2500
+    latency_threshold_ms: 800
+    version_source_type: none
+    deployment_label: legacy-host-a
