@@ -1,8 +1,10 @@
+import json
 from functools import lru_cache
 from pathlib import Path
+from typing import Annotated
 
 from pydantic import field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
@@ -17,7 +19,7 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-5"
     port: int = 8000
     self_base_url: str | None = None
-    cors_allowed_origins: list[str] = [
+    cors_allowed_origins: Annotated[list[str], NoDecode] = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
     ]
@@ -48,6 +50,12 @@ class Settings(BaseSettings):
                 "http://127.0.0.1:3000",
             ]
         if isinstance(value, str):
+            normalized = value.strip()
+            if normalized.startswith("["):
+                parsed = json.loads(normalized)
+                if not isinstance(parsed, list):
+                    raise ValueError("CORS_ALLOWED_ORIGINS JSON value must be a list.")
+                return [str(origin).strip() for origin in parsed if str(origin).strip()]
             return [origin.strip() for origin in value.split(",") if origin.strip()]
         return value
 
