@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/web/node_modules
 /.pnp
 .pnp.js
 
@@ -34,3 +35,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+dist/
+web/dist/
+api/.pytest_cache/
+convex/_generated/
+.env.local
+.env.production
+web/vite.config.js
+web/vite.config.d.ts
+web/tailwind.config.js
+web/tailwind.config.d.ts
+.convex/
+
+
+prd.md
