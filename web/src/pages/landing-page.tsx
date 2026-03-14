@@ -45,6 +45,29 @@ const featureCards = [
   },
 ] as const;
 
+const assessmentHighlights = [
+  {
+    title: "Start with configuration",
+    body:
+      "The monitor reads service name, URL, expected version, environment, platform, timeout, and version source from YAML or JSON. Adding a service is a config change, not a code change.",
+  },
+  {
+    title: "Keep the signal tight",
+    body:
+      "Each polling cycle records response code, latency, and observed version. From that, the app derives HEALTHY, DEGRADED, or DOWN and opens incidents for latency breaches, version drift, and repeated failures.",
+  },
+  {
+    title: "Separate collection from presentation",
+    body:
+      "FastAPI owns the polling loop and operational rules. Convex persists the latest service snapshot, check history, incidents, AI artifacts, and saved layouts. The React app focuses on reading and presenting that state clearly.",
+  },
+  {
+    title: "Optimize for reviewability",
+    body:
+      "The scope is deliberately small: one scheduler, one API surface, one live store, and Docker for quick startup. The goal is a system you can understand end to end in one sitting, then extend if needed.",
+  },
+] as const;
+
 const defaultLatencySeries = [282, 308, 294, 336, 312, 305, 358, 334, 321, 346, 328, 374];
 
 export function LandingPage() {
@@ -209,7 +232,8 @@ export function LandingPage() {
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
               <Button
                 size="lg"
-                className="gap-2 rounded-full bg-[#17181f] px-7 text-white hover:bg-[#252833]"
+                variant="secondary"
+                className="gap-2 rounded-full bg-[#f3efe8] px-7 text-[#252a34] ring-0 hover:bg-[#ebe5dc]"
                 onClick={scrollToPreview}
               >
                 View live preview
@@ -217,8 +241,7 @@ export function LandingPage() {
               </Button>
               <Button
                 size="lg"
-                variant="secondary"
-                className="gap-2 rounded-full bg-[#f3efe8] px-7 text-[#252a34] ring-0 hover:bg-[#ebe5dc]"
+                className="gap-2 rounded-full bg-[#17181f] px-7 text-white hover:bg-[#252833]"
                 onClick={() => navigate("/dashboard")}
               >
                 Open dashboard
@@ -253,60 +276,63 @@ export function LandingPage() {
             <div className="absolute right-[-30px] top-[40%] h-[420px] w-[260px] rounded-full bg-[#ef9b57]/50 blur-[110px]" />
             <div className="absolute inset-x-0 bottom-0 h-[180px] bg-[linear-gradient(180deg,rgba(255,216,180,0),rgba(255,205,159,0.28))]" />
 
-            <PreviewLeftMenu />
-            <PreviewRightPanel
-              topIssue={issueRows[0]}
-              spotlightServices={spotlightServices.slice(0, 3)}
-              lastPollAt={summary.last_poll_at}
-            />
-
-            <div className="relative mx-auto max-w-[1260px] rounded-[1.85rem] border border-white/85 bg-white/96 p-4 shadow-[0_36px_110px_rgba(214,131,64,0.18)] md:p-6">
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div className="flex min-w-0 items-center gap-3 rounded-full border border-[#ece8e1] bg-[#fcfbf9] px-4 py-3 text-[#7c7f85] md:min-w-[360px]">
-                  <Search className="h-4 w-4" />
-                  <span className="truncate text-sm">Search services, incidents, or versions</span>
+            <div className="relative mx-auto grid max-w-[1460px] gap-6 2xl:grid-cols-[minmax(0,1fr)_290px]">
+              <div className="min-w-0 rounded-[1.85rem] border border-white/85 bg-white/96 p-4 shadow-[0_36px_110px_rgba(214,131,64,0.18)] md:p-6">
+                <div className="flex flex-col gap-2 border-b border-[#f2e7db] pb-4 text-left md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#ad7c4b]">Landing preview</div>
+                    <div className="mt-1 text-sm text-[#6d727e]">
+                      Uses the same live summary data as the app, but presents it in a simplified hero composition.
+                    </div>
+                  </div>
+                  <div className="text-sm text-[#7b818d]">The full draggable workspace lives in the dashboard route.</div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <PreviewToolbarPill label="Today" />
-                  <PreviewToolbarPill label="Core fleet" />
-                  <PreviewIconPill icon={<RefreshCcw className="h-3.5 w-3.5" />} label="Reload" />
-                  <PreviewIconPill icon={<Wand2 className="h-3.5 w-3.5" />} label="AI compose" />
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                  <div className="flex min-w-0 items-center gap-3 rounded-full border border-[#ece8e1] bg-[#fcfbf9] px-4 py-3 text-[#7c7f85] md:min-w-[360px]">
+                    <Search className="h-4 w-4" />
+                    <span className="truncate text-sm">Search services, incidents, or versions</span>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <PreviewToolbarPill label="Today" />
+                    <PreviewToolbarPill label="Core fleet" />
+                    <PreviewIconPill icon={<RefreshCcw className="h-3.5 w-3.5" />} label="Reload" />
+                    <PreviewIconPill icon={<Wand2 className="h-3.5 w-3.5" />} label="AI compose" />
+                  </div>
                 </div>
-              </div>
 
-              <div className="mt-5 grid gap-3 md:grid-cols-4">
-                <BoardStatCard label="Monitored services" value={summary.total_services} accent="text-[#17191f]" />
-                <BoardStatCard label="Healthy" value={summary.healthy} accent="text-[#1f8b5e]" />
-                <BoardStatCard label="Open incidents" value={summary.open_incidents} accent="text-[#c45540]" />
-                <BoardStatCard label="Version drift" value={summary.version_drift_count} accent="text-[#b56b2a]" />
-              </div>
+                <div className="mt-5 grid gap-3 md:grid-cols-4">
+                  <BoardStatCard label="Monitored services" value={summary.total_services} accent="text-[#17191f]" />
+                  <BoardStatCard label="Healthy" value={summary.healthy} accent="text-[#1f8b5e]" />
+                  <BoardStatCard label="Open incidents" value={summary.open_incidents} accent="text-[#c45540]" />
+                  <BoardStatCard label="Version drift" value={summary.version_drift_count} accent="text-[#b56b2a]" />
+                </div>
 
-              <div className="mt-5 grid gap-4 xl:grid-cols-[1.28fr_0.72fr]">
-                <div className="rounded-[1.6rem] border border-[#efeae3] bg-[#fffdf9] p-5">
-                  <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                    <div>
-                      <div className="text-lg font-semibold tracking-tight text-[#22252d]">Core reliability KPIs</div>
-                      <div className="mt-2 text-sm leading-6 text-[#6e727c]">
-                        Watch live fleet latency against the calmer expected baseline and spot auth-critical drift earlier.
+                <div className="mt-5 grid gap-4 xl:grid-cols-[1.28fr_0.72fr]">
+                  <div className="rounded-[1.6rem] border border-[#efeae3] bg-[#fffdf9] p-5">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                      <div>
+                        <div className="text-lg font-semibold tracking-tight text-[#22252d]">Core reliability KPIs</div>
+                        <div className="mt-2 text-sm leading-6 text-[#6e727c]">
+                          Watch live fleet latency against the calmer expected baseline and spot auth-critical drift earlier.
+                        </div>
+                      </div>
+                      <div className="rounded-full bg-[#faf1e6] px-3 py-1 text-xs font-medium text-[#9a5f24]">
+                        Realtime board
                       </div>
                     </div>
-                    <div className="rounded-full bg-[#faf1e6] px-3 py-1 text-xs font-medium text-[#9a5f24]">
-                      Realtime board
+
+                    <div className="mt-5 rounded-[1.3rem] border border-[#f1ebe3] bg-white p-4">
+                      <HeroPreviewChart primary={latencySeries} comparison={comparisonSeries} />
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      <LegendChip color="bg-[#e68b42]" label="Current fleet" />
+                      <LegendChip color="bg-[#d6dbe5]" label="Expected baseline" />
                     </div>
                   </div>
 
-                  <div className="mt-5 rounded-[1.3rem] border border-[#f1ebe3] bg-white p-4">
-                    <HeroPreviewChart primary={latencySeries} comparison={comparisonSeries} />
-                  </div>
-
-                  <div className="mt-4 flex flex-wrap items-center gap-2">
-                    <LegendChip color="bg-[#e68b42]" label="Current fleet" />
-                    <LegendChip color="bg-[#d6dbe5]" label="Expected baseline" />
-                  </div>
-                </div>
-
-                <div className="grid gap-4">
                   <div className="rounded-[1.6rem] border border-[#efeae3] bg-[#fffdf9] p-5">
                     <div className="flex items-center justify-between gap-3">
                       <div className="text-lg font-semibold tracking-tight text-[#22252d]">Auth journey</div>
@@ -326,45 +352,32 @@ export function LandingPage() {
                       <MiniMetric label="Version drift" value={summary.version_drift_count} />
                     </div>
                   </div>
+                </div>
 
-                  <div className="rounded-[1.6rem] border border-[#efeae3] bg-[#fffdf9] p-5">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="text-lg font-semibold tracking-tight text-[#22252d]">Priority services</div>
-                      <CircleAlert className="h-4 w-4 text-[#858995]" />
-                    </div>
-
-                    <div className="mt-4 space-y-3">
-                      {spotlightServices.slice(0, 3).map((service) => (
-                        <div key={service.key} className="rounded-[1.1rem] border border-[#eee8df] bg-white px-4 py-4">
-                          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                            <div>
-                              <div className="font-medium text-[#22252d]">{service.name}</div>
-                              <div className="mt-1 text-sm text-[#707581]">{service.meta}</div>
-                            </div>
-                            <StatusBadge status={service.status} />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                <div className="mt-5 grid gap-3 md:grid-cols-3">
+                  <BottomPreviewCard
+                    label="Open incidents"
+                    value={summary.open_incidents}
+                    detail={issueRows[0]?.summary || "No active review queue items."}
+                  />
+                  <BottomPreviewCard
+                    label="Dashboard route"
+                    value="Drag + resize"
+                    detail="The actual /dashboard page is the editable widget workspace with filters, drilldowns, and saved layouts."
+                  />
+                  <BottomPreviewCard
+                    label="Shared data"
+                    value="Convex-backed"
+                    detail="This preview reads the same summary model as the operational route, but not the same literal widget layout."
+                  />
                 </div>
               </div>
 
-              <div className="mt-5 grid gap-3 md:grid-cols-3">
-                <BottomPreviewCard
-                  label="Open incidents"
-                  value={summary.open_incidents}
-                  detail={issueRows[0]?.summary || "No active review queue items."}
-                />
-                <BottomPreviewCard
-                  label="Workflow"
-                  value="Drag + resize"
-                  detail="The real dashboard still supports rearranging widgets and composition changes."
-                />
-                <BottomPreviewCard
-                  label="Live store"
-                  value="Convex-backed"
-                  detail="The preview reads from the same summary model as the operational route."
+              <div className="hidden 2xl:block 2xl:pt-6">
+                <PreviewRightPanel
+                  topIssue={issueRows[0]}
+                  spotlightServices={spotlightServices.slice(0, 3)}
+                  lastPollAt={summary.last_poll_at}
                 />
               </div>
             </div>
@@ -394,22 +407,40 @@ export function LandingPage() {
         id="why-it-works"
         className="mx-auto mt-6 max-w-[1760px] rounded-[1.8rem] border border-[#ece5dc] bg-[#fcfbf8] p-6 text-[#1f2430] shadow-[0_18px_48px_rgba(107,76,34,0.08)] md:p-8"
       >
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+        <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
           <div>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b57d]">Why it works</div>
+            <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f0b57d]">Project rationale</div>
             <h2 className="mt-4 max-w-[620px] text-3xl font-semibold tracking-[-0.04em] md:text-[2.7rem]">
-              The front door now looks like a product, not a prototype.
+              Built around the question teams actually ask after a deploy.
             </h2>
             <p className="mt-4 max-w-[640px] text-base leading-8 text-[#676d79]">
-              The landing page is now a deliberate hero shell with one strong preview, light-orange atmosphere, and clear
-              dashboard entry. The workspace route stays tool-first, but the first impression is finally doing its job.
+              When services are spread across ECS, EC2, and manual hosts, the problem is usually not a total lack of
+              data. It is the lack of one trusted place to answer simple questions quickly: is the service up, is it
+              slow, and is it serving the version we expect?
             </p>
+            <p className="mt-4 max-w-[640px] text-base leading-8 text-[#676d79]">
+              That drove the design choices here. Checks are config-driven so the fleet can grow without hard-coded
+              monitor logic. The status model stays intentionally narrow because the first job of the dashboard is fast
+              triage, not deep investigation. Polling happens on the server, persistence lives in Convex, and the UI is
+              split into a hero-style preview and a tool-first workspace so each route has a clear purpose.
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              {["Config-led setup", "Server-side polling", "Version drift", "Incident tracking", "Convex persistence"].map((item) => (
+                <span
+                  key={item}
+                  className="inline-flex items-center rounded-full border border-[#ece5dc] bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#7f7468]"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
           </div>
 
-          <div className="grid gap-3">
-            <WhyItem title="No animated overlay" body="The old animated background has been removed from the live UI instead of being tuned around." />
-            <WhyItem title="Hero-first composition" body="Navigation, headline, CTAs, logo strip, and preview now read in a stable sequence." />
-            <WhyItem title="Dashboard remains real" body="The preview still uses live summary data while the explicit dashboard route stays available." />
+          <div className="grid gap-3 md:grid-cols-2">
+            {assessmentHighlights.map((item) => (
+              <WhyItem key={item.title} title={item.title} body={item.body} />
+            ))}
           </div>
         </div>
       </section>
@@ -526,30 +557,6 @@ function LegendChip({ color, label }: { color: string; label: string }) {
   );
 }
 
-function PreviewLeftMenu() {
-  return (
-    <div className="pointer-events-none absolute bottom-8 left-6 hidden w-[220px] rounded-[1.5rem] border border-white/75 bg-white/95 p-4 shadow-[0_28px_70px_rgba(217,138,77,0.22)] xl:block">
-      <div className="rounded-[1rem] bg-[#faf6ef] px-3 py-3">
-        <div className="text-sm font-medium text-[#252932]">Discover</div>
-        <div className="mt-3 rounded-full border border-[#ebe4da] bg-white px-3 py-2 text-sm text-[#616773]">+ New board</div>
-      </div>
-
-      <div className="mt-4 space-y-1">
-        {["Board", "Auth Journey", "Incidents", "Latency", "Version Drift", "Experiments"].map((item, index) => (
-          <div
-            key={item}
-            className={`rounded-[1rem] px-3 py-3 text-sm ${
-              index === 0 ? "bg-[#fff3e6] font-medium text-[#22262e]" : "text-[#676d79]"
-            }`}
-          >
-            {item}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function PreviewRightPanel({
   topIssue,
   spotlightServices,
@@ -560,7 +567,7 @@ function PreviewRightPanel({
   lastPollAt?: string | null;
 }) {
   return (
-    <div className="pointer-events-none absolute right-8 top-8 hidden w-[290px] rounded-[1.5rem] border border-white/75 bg-white/96 p-5 shadow-[0_28px_70px_rgba(217,138,77,0.22)] 2xl:block">
+    <div className="w-[290px] rounded-[1.5rem] border border-white/75 bg-white/96 p-5 shadow-[0_28px_70px_rgba(217,138,77,0.22)]">
       <div className="text-xl font-semibold tracking-tight text-[#23262f]">Review this fleet</div>
       <div className="mt-2 text-sm leading-6 text-[#6d727e]">Last poll: {formatDate(lastPollAt)}</div>
 
